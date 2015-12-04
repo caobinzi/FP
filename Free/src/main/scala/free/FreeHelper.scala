@@ -14,6 +14,8 @@ object FreeHelper {
 
   type -~>[F[_], G[_]] = Inject[F, G] 
 
+  type FreeReader[A] = Reader[Unit, A]
+
   object LiftImplicit {
     implicit def lift[F[_], G[_], A](fa: F[A])(implicit I: F -~> G): Free.FreeC[G, A] = Free liftFC I.inj(fa)
   }
