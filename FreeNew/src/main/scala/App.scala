@@ -10,10 +10,7 @@ object FreeApp extends App {
   type Result[A] = State[Map[Int, String], A]
 
   def prg[F[_]](implicit I: Interact -~> F, C: Crud -~> F, L: Log -~> F, P:PPLog -~> F): Free[F, Boolean] = {
-    import Interact._
     import Crud._
-    import Log._
-    import PPLog._
     def askFor[T](question: String)(extract: String => T): Free[F, T] = {
       for {
         str <- Ask(question)
