@@ -1,14 +1,22 @@
 import scalaz._
 import scalaz.Scalaz._
 import Helper._
-sealed trait Crud[A]
-object Crud {
-  case class Create(key: Int, value: String) extends Crud[Boolean]
-  case class Read(key: Int) extends Crud[Option[String]]
-  case class Update(key: Int, value: String) extends Crud[Boolean]
-  case class Delete(key: Int) extends Crud[Boolean]
-  type Result[A] = State[Map[Int, String], A]
+trait GenCrudCompanion {
+  type Key
+  type Value
+  sealed trait Crud[A]
+  case class Create(key: Key, value: Value) extends Crud[Boolean]
+  case class Read(key: Key)                 extends Crud[Option[Value]]
+  case class Update(key: Key, value: Value) extends Crud[Boolean]
+  case class Delete(key: Key)               extends Crud[Boolean]
 }
+
+object Crud extends GenCrudCompanion {
+  type Key = Int
+  type Value = String
+  type Result[A] = State[Map[Crud.Key, Crud.Value], A]
+}
+
 import Crud._
 object Crudinterpreter extends (Crud ~> Result) {
   def apply[A](crud: Crud[A]): Result[A] = crud match {

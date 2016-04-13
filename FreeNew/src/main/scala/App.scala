@@ -7,7 +7,7 @@ import scalaz.Scalaz._
 object FreeApp extends App {
   import Helper._
 
-  type Result[A] = State[Map[Int, String], A]
+  import Crud._
 
   def prg[F[_]](implicit I: Interact -~> F, C: Crud -~> F, L: Log -~> F, P:PPLog -~> F): Free[F, Boolean] = {
     import Crud._
