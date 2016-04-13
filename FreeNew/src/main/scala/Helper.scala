@@ -7,7 +7,7 @@ import scalaz.Scalaz._
 object Helper {
   type Copro[F[_], G[_]] = { type f[x] = Coproduct[F, G, x] } 
 
-  implicit class NaturalTransformationOrOps[F[_], H[_]](private val nt: F ~> H) extends AnyVal {
+  implicit class NaturalTransformationOrOps[F[_], H[_]](nt: F ~> H)  {
     // given F ~> H and G ~> H we derive Copro[F, G]#f ~> H
     def or[G[_]](f: G ~> H): Copro[F, G]#f ~> H =
       new (Copro[F, G]#f ~> H) {
