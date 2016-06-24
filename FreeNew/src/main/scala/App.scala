@@ -3,13 +3,14 @@ import scala.language.implicitConversions
 import scala.util.Try
 import scalaz._
 import scalaz.Scalaz._
+import Free._
 
 object FreeApp extends App {
   import Helper._
 
   import Crud._
 
-  def prg[F[_]](implicit I: Interact -~> F, C: Crud -~> F, L: Log -~> F, P:PPLog -~> F): Free[F, Boolean] = {
+  def prg[F[_]](implicit I: Interact -~> F, C: Crud -~> F, L: Log -~> F, P: PPLog -~> F): Free[F, Boolean] = {
     import Crud._
     def askFor[T](question: String)(extract: String => T): Free[F, T] = {
       for {
@@ -20,7 +21,10 @@ object FreeApp extends App {
     for {
       key <- askFor("Which key (Integer)?")(_.toInt)
       c <- Create(key, "A")
-      _ <- Info(s"created key $key which did${if (c) "" else "n't"} exist")
+      q <- c.fold (
+        t = Info(s"created key $key which did${if (c) "" else "n't"} exist"),
+        f = Warn(s"Error ") //should be the same type
+      )
       vOpt <- Read(key)
       _ <- Info(s"read key $key : $vOpt")
       _ <- PPInfo(s"PP here")
@@ -30,6 +34,7 @@ object FreeApp extends App {
       _ <- Info(s"deleted key $key which did${if (d2) "" else "n't"} exist")
       _ <- Create(key, "A")
       _ <- Tell("finished roundtrip")
+      _ <- List(1, 2).map(_ => Tell("finished roundtrip"): Free[F, Unit]).sequenceU
       passed = !c && vOpt.isDefined && d1 && !d2
     } yield passed: Boolean
   }
