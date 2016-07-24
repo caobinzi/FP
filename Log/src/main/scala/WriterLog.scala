@@ -8,7 +8,7 @@ object WriterLog {
   def calc2: Writer[List[String], Int] = Writer(List("doing other"), 22)
 
   val r = for {
-    a <- calc1
+    a <- calc1 :++> List("Finished ") :++>> {x => List(s"haha got $x")}
     b <- calc2
   } yield {
     a + b

@@ -5,9 +5,9 @@ import scalaz.Scalaz._
 
 
 object LogApp extends App {
-//  WriterLog.log
+  println(WriterLog.log)
   //WriterTLog.log
   //OptionTWriterLog.log
-  OptionWriterLog.log
+  //OptionWriterLog.log
 }
 
