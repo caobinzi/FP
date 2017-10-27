@@ -24,10 +24,12 @@ object EffOptionApp extends App {
       _ <- Delete("tame-cats")
     } yield r
 
-  val result1 = UnSafeIter.runKVStoreUnsafe(program[Fx.fx2[KVStore, Option]]).runOption.run
+  val result1 = UnSafeIter.runKVStoreUnsafe(program[Fx.fx2[Option, KVStore]]).runOption.run
+
   println(result1)
+
   type Stack =
-    Fx.fx5[KVStore, Option, Throwable Either ?, State[Map[String, Any], ?], Writer[String, ?]]
+    Fx.fx5[KVStore, Option, Throwable Either ?, State[Map[String, Any], ?], Writer[LogEntry, ?]]
 
   val result2 =
     SafeInter
