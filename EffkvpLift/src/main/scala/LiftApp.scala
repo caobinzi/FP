@@ -16,12 +16,12 @@ object EffOptionApp extends App {
   def program[R: _kvstore: _option]: Eff[R, Option[Int]] =
     for {
       _ <- fromOption(2.some)
-      _ <- Put("wild-cats", 2)
-      _ <- update[Int, R]("wild-cats", _ + 12)
-      _ <- Put("tame-cats", 5)
-      n <- Get[Int]("wild-cats").map(_.map(_ * 2))
+      _ <- Put[Int]("wild-cats", 2): KVStore[Unit]
+      _ <- Put[Int]("tame-cats", 5): KVStore[Unit]
+      n <- Get[Int]("wild-cats"): KVStore[Option[Int]]
+      r = n.map(_ * 2)
       _ <- Delete("tame-cats")
-    } yield n
+    } yield r
 
   val result1 = UnSafeIter.runKVStoreUnsafe(program[Fx.fx2[KVStore, Option]]).runOption.run
   println(result1)
