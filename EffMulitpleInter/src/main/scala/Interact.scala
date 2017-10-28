@@ -3,9 +3,9 @@ import scala.language.implicitConversions
 import cats._
 import data._
 import org.atnos.eff._
-import org.atnos.eff.all._
 import org.atnos.eff.syntax.all._
 import Types._
+import org.atnos.eff.all._
 
 import cats.implicits._
 import org.atnos.eff._, interpret._
@@ -18,6 +18,7 @@ object Interact {
   import org.atnos.eff._
   type _interact[R]    = Interact |= R
   type WriterString[A] = Writer[String, A]
+  def myDate = new java.util.Date
   def readLine(): String =
     "snuggles"
   def askUser[R: _interact](prompt: String): Eff[R, String] =
@@ -56,6 +57,37 @@ object Interact {
     type S = Fx.prepend[WriterString, R]
     runInteract(effects)
   }
- */
+   */
+  type ReaderString[A]  = Reader[String, A]
+  type _readerString[R] = ReaderString |= R
+  type _writerString[R] = Writer[String, ?] |= R
+
+  def runInteractTranslate[R, U, A](
+      effects: Eff[R, A]
+  )(
+      implicit m: Member.Aux[Interact, R, U],
+      writer:     _writerString[U],
+      reader:     _readerString[U]
+  ): Eff[U, A] = {
+    import org.atnos.eff.writer._
+
+    translate(effects)(new Translate[Interact, U] {
+      def apply[X](kv: Interact[X]): Eff[U, X] =
+        for {
+          _ <- tell(s"${myDate}:${kv} start")
+          x <- _apply(kv)
+          _ <- tell(s"${myDate}:${kv} End")
+        } yield x
+      def _apply[X](kv: Interact[X]): Eff[U, X] =
+        kv match {
+
+          case Ask(prompt) =>
+            ask[U, String]
+
+          case Tell(msg) =>
+            tell(msg)
+        }
+    })
+  }
 
 }

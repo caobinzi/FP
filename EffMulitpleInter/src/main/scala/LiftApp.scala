@@ -19,14 +19,20 @@ object EffOptionApp extends App {
   def program[R: _interact: _dataOp]: Eff[R, Unit] =
     for {
       cat  <- askUser("What's the kitty's name?")
-      _    <- tellUser("Current cats: --")
+      _    <- tellUser(s"Current cats: ${cat}")
       _    <- addCat(cat)
       cats <- getAllCats
       _    <- tellUser("Current cats: " + cats.mkString(", "))
     } yield ()
   type Stack = Fx.fx2[Interact, DataOp]
+  println("Run Stack 1...")
 
   runInteract(runDataOp(program[Stack])).run
+
+  println("Run Stack 21...")
+  type Stack2 = Fx.fx4[Interact, DataOp, Writer[String, ?], Reader[String, ?]]
+  val (r, logs) = (runInteractTranslate(runDataOp(program[Stack2])).runReader("sss").runWriter.run)
+  logs.foreach(println)
   //type Stack2 = Fx.fx3[Interact, DataOp, WriterString]
   //runInteract(runDataOp(program[Stack2]))
 
