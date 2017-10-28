@@ -5,16 +5,16 @@ import cats.implicits._
 import data._
 import org.atnos.eff._
 import org.atnos.eff.all._
+import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
 object EffOptionApp extends App {
 
-  type WriterString[A] = Writer[String, A]
   import org.atnos.eff._
   import Interact._
   import DataOp._
   import EffHelper._
-  import org.atnos.eff._
+  import LogHelper._
 
   def program[R: _interact: _dataOp]: Eff[R, Unit] =
     for {
@@ -25,15 +25,22 @@ object EffOptionApp extends App {
       _    <- tellUser("Current cats: " + cats.mkString(", "))
     } yield ()
   type Stack = Fx.fx2[Interact, DataOp]
-  println("Run Stack 1...")
+  println("Basic Stack 1 ---->")
 
   runInteract(runDataOp(program[Stack])).run
 
-  println("Run Stack 21...")
+  println("Log Stack 2 --->")
   type Stack2 = Fx.fx4[Interact, DataOp, Writer[String, ?], Reader[String, ?]]
-  val (r, logs) = (runInteractTranslate(runDataOp(program[Stack2])).runReader("sss").runWriter.run)
+  val (r, logs) = (runInteractTranslate(runDataOp(program[Stack2].logTimes[Interact]))
+    .runReader("sss")
+    .runWriter
+    .run)
   logs.foreach(println)
-  //type Stack2 = Fx.fx3[Interact, DataOp, WriterString]
-  //runInteract(runDataOp(program[Stack2]))
+
+  println("Log Stack 3 ----->")
+  type Stack3 = Fx.fx3[Interact, DataOp, Writer[String, ?]]
+  val (r3, logs3) =
+    (runInteract(runDataOp(program[Stack3].logTimes[Interact])).runWriter.run)
+  logs3.foreach(println)
 
 }
