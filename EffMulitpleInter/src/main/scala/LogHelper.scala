@@ -18,9 +18,11 @@ object LogHelper {
                                             writer: MemberIn[WriterString, R]): Eff[R, A] = {
     translateInto(eff)(new Translate[T, R] {
       def apply[X](tx: T[X]): Eff[R, X] =
-        tell[R, String](s"${new java.util.Date}:$tx start") >>
-          send[T, R, X](tx) <<
-          tell[R, String](s"${new java.util.Date}:$tx end")
+        for {
+          _ <- tell[R, String](s"${new java.util.Date}:$tx start")
+          x <- send[T, R, X](tx)
+          _ <- tell[R, String](s"${new java.util.Date}:$tx end")
+        } yield x
     })
   }
 

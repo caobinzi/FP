@@ -36,6 +36,7 @@ object EffOptionApp extends App {
     .runWriter
     .run)
   logs.foreach(println)
+  println(r)
 
   println("Log Stack 3 ----->")
   type Stack3 = Fx.fx3[Interact, DataOp, Writer[String, ?]]

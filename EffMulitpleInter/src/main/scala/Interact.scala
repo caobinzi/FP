@@ -30,20 +30,22 @@ object Interact {
   def runInteract[R, A](effect: Eff[R, A])(implicit m: Interact <= R): Eff[m.Out, A] =
     recurse(effect)(new Recurser[Interact, m.Out, A, A] {
       def onPure(a: A): A = a
+      def ask(s:    String): String = {
+        println("Wait for 5 seconds")
+        Thread.sleep(5000)
+        readLine()
+      }
 
       def onEffect[X](i: Interact[X]): X Either Eff[m.Out, A] = Left {
         i match {
-          case Ask(prompt) =>
-            println(prompt)
-            readLine()
-
+          case Ask(prompt) => ask(prompt)
           case Tell(msg) =>
             println(msg)
         }
       }
       def onApplicative[X, T[_]: Traverse](ms: T[Interact[X]]): T[X] Either Interact[T[X]] =
         Left(ms.map {
-          case Ask(prompt) => println(prompt); readLine()
+          case Ask(prompt) => ask(prompt)
           case Tell(msg)   => println(msg)
         })
 
