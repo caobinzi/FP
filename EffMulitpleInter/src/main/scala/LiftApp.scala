@@ -44,4 +44,11 @@ object EffOptionApp extends App {
     (runInteract(runDataOp(program[Stack3].logTimes[DataOp].logTimes[Interact])).runWriter.run)
   logs3.foreach(println)
 
+  println("Log Stack 4 ----->")
+
+  type Stack4 = Fx.fx3[Interact, DataOp, Writer[DataOp[_], ?]]
+  val (r4, logs4) =
+    (runInteract(runDataOp(trace[Stack4, DataOp, Unit](program[Stack4]))).runWriter.run)
+  println(logs4)
+
 }

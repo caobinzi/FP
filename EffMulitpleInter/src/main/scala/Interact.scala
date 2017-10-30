@@ -31,8 +31,8 @@ object Interact {
     recurse(effect)(new Recurser[Interact, m.Out, A, A] {
       def onPure(a: A): A = a
       def ask(s:    String): String = {
-        println("Wait for 5 seconds")
-        Thread.sleep(5000)
+        println("Wait for 2 seconds")
+        Thread.sleep(2000)
         readLine()
       }
 
