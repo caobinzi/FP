@@ -48,7 +48,7 @@ object EffOptionApp extends App {
 
   type Stack4 = Fx.fx3[Interact, DataOp, Writer[DataOp[_], ?]]
   val (r4, logs4) =
-    (runInteract(runDataOp(trace[Stack4, DataOp, Unit](program[Stack4]))).runWriter.run)
+    (runInteract(runDataOp(program[Stack4].trace[DataOp])).runWriter.run)
   println(logs4)
 
 }
