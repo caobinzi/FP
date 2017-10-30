@@ -37,34 +37,53 @@ object LogHelper {
         } yield x
     })
   }
-  def writeBA[R, T[_], O, A](eff: Eff[R, A])(bW: Write[T, O], aW: Write[T, O])(
+  def writeBA[R, T[_], O, A](eff: Eff[R, A])(beforeW: Write[T, O], afterW: Write[T, O])(
       implicit memberT:           MemberInOut[T, R],
       memberW:                    MemberIn[Writer[O, ?], R]): Eff[R, A] = {
     augmentBA[R, T, Writer[O, ?], A](eff)(
       beforeW = new Augment[T, Writer[O, ?]] {
-        def apply[X](tx: T[X]) = Writer.tell[O](bW(tx))
+        def apply[X](tx: T[X]) = Writer.tell[O](beforeW(tx))
       },
       afterW = new Augment[T, Writer[O, ?]] {
-        def apply[X](tx: T[X]) = Writer.tell[O](aW(tx))
+        def apply[X](tx: T[X]) = Writer.tell[O](afterW(tx))
       }
     )
   }
-  def traceBA[R, T[_], A](eff:                     Eff[R, A])(implicit memberT: MemberInOut[T, R],
-                                          memberW: MemberInOut[Writer[String, ?], R]): Eff[R, A] =
+  def traceBA[R, T[_], L, A](eff: Eff[R, A])(beforeFunc: T[_] => L, afterFunc: T[_] => L)(
+      implicit memberT:           MemberInOut[T, R],
+      memberW:                    MemberInOut[Writer[L, ?], R]): Eff[R, A] =
+    writeBA[R, T, L, A](eff)(
+      beforeW = new Write[T, L] {
+        def apply[X](tx: T[X]): L = beforeFunc(tx)
+      },
+      afterW = new Write[T, L] {
+        def apply[X](tx: T[X]): L = afterFunc(tx)
+      }
+    )
+
+  def traceLogTimes[R, T[_], A](eff: Eff[R, A])(
+      implicit memberT:              MemberInOut[T, R],
+      memberW:                       MemberInOut[Writer[String, ?], R]): Eff[R, A] =
     writeBA[R, T, String, A](eff)(
-      bW = new Write[T, String] {
+      beforeW = new Write[T, String] {
         def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} Start"
       },
-      aW = new Write[T, String] {
+      afterW = new Write[T, String] {
         def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} End"
       }
+    )
+  def traceLogTimes2[R, T[_], A](eff: Eff[R, A])(
+      implicit memberT:               MemberInOut[T, R],
+      memberW:                        MemberInOut[Writer[String, ?], R]): Eff[R, A] =
+    traceBA[R, T, String, A](eff)(
+      tx => s"${new java.util.Date} ${tx} Start",
+      tx => s"${new java.util.Date} ${tx} End"
     )
 
   implicit class EffTranslateIntoOps[R, A](val e: Eff[R, A]) extends AnyVal {
 
-    def traceAfter[F[_]](implicit memberF: MemberInOut[F, R],
-                         memberW:          MemberInOut[Writer[String, ?], R]): Eff[R, A] =
-      LogHelper.traceBA[R, F, A](e)
-
+    def traceLogTimes[F[_]](implicit memberF: MemberInOut[F, R],
+                            memberW:          MemberInOut[Writer[String, ?], R]): Eff[R, A] =
+      LogHelper.traceLogTimes2[R, F, A](e)
   }
 }
