@@ -86,4 +86,22 @@ object LogHelper {
                             memberW:          MemberInOut[Writer[String, ?], R]): Eff[R, A] =
       LogHelper.traceLogTimes2[R, F, A](e)
   }
+
+  implicit class EffTraceOps[R, A, L](val e: Eff[R, A]) extends AnyVal {
+
+    def traceBAOps[T[_]](beforeFunc: T[_] => L, afterFunc: T[_] => L)(
+        implicit memberT:            MemberInOut[T, R],
+        memberW:                     MemberInOut[Writer[L, ?], R]): Eff[R, A] =
+      LogHelper.traceBA[R, T, L, A](e)(beforeFunc, afterFunc)
+  }
+
+  implicit class EffTraceTimeOps[R, A](val e: Eff[R, A]) extends AnyVal {
+    def traceTimes[T[_]](implicit memberT:    MemberInOut[T, R],
+                         memberW:             MemberInOut[Writer[String, ?], R]) =
+      e.traceBAOps[T](
+        tx => s"${new java.util.Date} ${tx} Start",
+        tx => s"${new java.util.Date} ${tx} End"
+      )
+  }
+
 }
