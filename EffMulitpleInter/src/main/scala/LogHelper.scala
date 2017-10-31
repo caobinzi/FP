@@ -61,30 +61,27 @@ object LogHelper {
       }
     )
 
-  def traceLogTimes[R, T[_], A](eff: Eff[R, A])(
-      implicit memberT:              MemberInOut[T, R],
-      memberW:                       MemberInOut[Writer[String, ?], R]): Eff[R, A] =
-    writeBA[R, T, String, A](eff)(
-      beforeW = new Write[T, String] {
-        def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} Start"
-      },
-      afterW = new Write[T, String] {
-        def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} End"
-      }
-    )
-  def traceLogTimes2[R, T[_], A](eff: Eff[R, A])(
-      implicit memberT:               MemberInOut[T, R],
-      memberW:                        MemberInOut[Writer[String, ?], R]): Eff[R, A] =
-    traceBA[R, T, String, A](eff)(
-      tx => s"${new java.util.Date} ${tx} Start",
-      tx => s"${new java.util.Date} ${tx} End"
-    )
-
   implicit class EffTranslateIntoOps[R, A](val e: Eff[R, A]) extends AnyVal {
+    def traceLogTimes1[T[_]](implicit memberT:    MemberInOut[T, R],
+                             memberW:             MemberInOut[Writer[String, ?], R]): Eff[R, A] =
+      writeBA[R, T, String, A](e)(
+        beforeW = new Write[T, String] {
+          def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} Start"
+        },
+        afterW = new Write[T, String] {
+          def apply[X](tx: T[X]): String = s"${new java.util.Date} ${tx} End"
+        }
+      )
+    def traceLogTimes2[T[_]](implicit memberT: MemberInOut[T, R],
+                             memberW:          MemberInOut[Writer[String, ?], R]): Eff[R, A] =
+      traceBA[R, T, String, A](e)(
+        tx => s"${new java.util.Date} ${tx} Start",
+        tx => s"${new java.util.Date} ${tx} End"
+      )
 
-    def traceLogTimes[F[_]](implicit memberF: MemberInOut[F, R],
+    def traceLogTimes[T[_]](implicit memberF: MemberInOut[T, R],
                             memberW:          MemberInOut[Writer[String, ?], R]): Eff[R, A] =
-      LogHelper.traceLogTimes2[R, F, A](e)
+      traceLogTimes2[T]
   }
 
   implicit class EffTraceOps[R, A, L](val e: Eff[R, A]) extends AnyVal {
