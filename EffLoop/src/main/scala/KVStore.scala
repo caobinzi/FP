@@ -8,8 +8,9 @@ import org.atnos.eff.syntax.all._
 
 sealed trait KVStore[A]
 
-case class Put(key:    String, value: Int) extends KVStore[Unit]
-case class Get(key:    String) extends KVStore[Option[Int]]
+case class Put(key: String, value: Int) extends KVStore[Unit]
+case class Get(key: String) extends KVStore[Option[Int]]
+object Check extends KVStore[Boolean]
 case class Delete(key: String) extends KVStore[Unit]
 
 object KVStore {

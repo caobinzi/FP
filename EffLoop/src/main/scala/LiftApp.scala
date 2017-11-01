@@ -6,6 +6,7 @@ import data._
 import org.atnos.eff._
 import org.atnos.eff.all._
 import org.atnos.eff.syntax.all._
+import scala.util.Random
 
 object EffOptionApp extends App {
 
@@ -25,12 +26,13 @@ object EffOptionApp extends App {
       _ <- Delete("tame-cats")
     } yield continue
 
-  def done[R: _kvstore: _option]: Eff[R, Boolean] =
+  def done[R: _kvstore]: Eff[R, Boolean] =
     for {
-      continue <- fromOption(false.some)
-    } yield continue
+      continue <- Check
+    } yield { println(s"-------Continue is ${continue}"); continue }
 
-  val pp      = program[Fx.fx2[Option, KVStore]].untilM_(done)
+  type TT = Fx.fx2[Option, KVStore]
+  val pp      = program[TT].untilM_(done[TT])
   val result1 = UnSafeIter.runKVStoreUnsafe(pp).runOption.run
 
   println(result1)

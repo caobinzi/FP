@@ -2,6 +2,7 @@ import org.atnos.eff._, interpret._
 import cats.Traverse
 import cats.implicits._
 import scala.collection.mutable._
+import scala.util.Random
 
 /**
   * Unsafe interpreter for KVStore effects
@@ -24,7 +25,8 @@ import scala.collection.mutable._
 object UnSafeIter {
   def runKVStoreUnsafe[R, A](effects: Eff[R, A])(implicit m: KVStore <= R): Eff[m.Out, A] = {
     // a very simple (and imprecise) key-value store
-    val kvs = Map.empty[String, Any]
+    val kvs    = Map.empty[String, Any]
+    val random = new Random(1000)
 
     val sideEffect = new SideEffect[KVStore] {
       def apply[X](kv: KVStore[X]): X =
@@ -37,6 +39,10 @@ object UnSafeIter {
           case Get(key) =>
             println(s"get($key)")
             kvs.get(key).asInstanceOf[X]
+          case Check =>
+            val myint = random.nextInt(1000)
+            println(s"Check random is ${myint}")
+            (myint > 950).asInstanceOf[X]
 
           case Delete(key) =>
             println(s"delete($key)")
