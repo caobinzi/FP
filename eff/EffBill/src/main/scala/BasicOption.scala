@@ -11,38 +11,38 @@ import org.atnos.eff.syntax.all._
 object EffBasicOptionApp extends App {
 
   import org.atnos.eff._
-  import InteractOp._
+  import IvrOp._
   import BillOp._
   import EffHelper._
   import LogHelper._
 
-  def checkInput[R: _interact](input: String): Eff[R, Option[String]] =
-    (Check(input): Eff[R, Result]) >>= { r =>
+  def checkInput[R: _ivr](input: String): Eff[R, Option[String]] =
+    (CheckInput(input): Eff[R, Result]) >>= { r =>
       r match {
         case Continue => Eff.pure(input.some)
         case Stop     => Eff.pure(None)
-        case AskAgain => askBill[R]
+        case RequestAgain => askBill[R]
       }
     }
 
-  def askBill[R: _interact]: Eff[R, Option[String]] =
+  def askBill[R: _ivr]: Eff[R, Option[String]] =
     for {
-      input <- Ask("Please type in your bill reference or type 0 to stop")
+      input <- Request("Please type in your bill reference or type 0 to stop")
       bill  <- checkInput(input)
     } yield bill
 
-  def program[R: _interact: _dataOp: _option]: Eff[R, Unit] =
+  def program[R: _ivr: _dataOp: _option]: Eff[R, Unit] =
     for {
       billOption <- askBill
       bill       <- fromOption(billOption)
-      cats       <- Tell(s"Your bill reference: ${bill}")
-      card       <- Ask("Please type in your credit card info ")
-      cats       <- Tell(s"Your credit card is : ${card}, we are processing now")
+      cats       <- Response(s"Your bill reference: ${bill}")
+      card       <- Request("Please type in your credit card info ")
+      cats       <- Response(s"Your credit card is : ${card}, we are processing now")
       receipt    <- PayBill(bill, card)
-      _          <- Tell(s"Your payment refrence is ${receipt}")
+      _          <- Response(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack = Fx.fx3[InteractOp, BillOp, Option]
-  program[Stack].runBill.runInteract.runOption.run
+  type Stack = Fx.fx3[IvrOp, BillOp, Option]
+  program[Stack].runBill.runIvr.runOption.run
 
 }

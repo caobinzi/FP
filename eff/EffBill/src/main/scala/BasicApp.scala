@@ -11,21 +11,21 @@ import org.atnos.eff.syntax.all._
 object EffBasicApp extends App {
 
   import org.atnos.eff._
-  import InteractOp._
+  import IvrOp._
   import BillOp._
   import EffHelper._
   import LogHelper._
 
-  def program[R: _interact: _dataOp]: Eff[R, Unit] =
+  def program[R: _ivr: _dataOp]: Eff[R, Unit] =
     for {
-      bill    <- Ask("Please type in your bill reference ")
-      cats    <- Tell(s"Your bill reference: ${bill}")
-      card    <- Ask("Please type in your credit card info ")
-      cats    <- Tell(s"Your credit card is : ${card}, we are processing now")
+      bill    <- Request("Please type in your bill reference ")
+      cats    <- Response(s"Your bill reference: ${bill}")
+      card    <- Request("Please type in your credit card info ")
+      cats    <- Response(s"Your credit card is : ${card}, we are processing now")
       receipt <- PayBill(bill, card)
-      _       <- Tell(s"Your payment refrence is ${receipt}")
+      _       <- Response(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack = Fx.fx2[InteractOp, BillOp]
-  program[Stack].runBill.runInteract.run
+  type Stack = Fx.fx2[IvrOp, BillOp]
+  program[Stack].runBill.runIvr.run
 }
