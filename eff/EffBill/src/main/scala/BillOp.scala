@@ -21,20 +21,20 @@ object BillOp {
     val memDataSet = new scala.collection.mutable.ListBuffer[String]
 
     recurse(effect)(new Recurser[BillOp, m.Out, A, A] {
-      def onPure(a:           A): A = a
-      def paymentAdvice(bill: String, card: String) = "Ok".some
-      def check(bill:         String) = bill === "1234"
+      def onPure(a:     A): A = a
+      def payBill(bill: String, card: String) = "Ok".some
+      def check(bill:   String) = bill === "1234"
 
       def onEffect[X](i: BillOp[X]): X Either Eff[m.Out, A] = Left {
         i match {
-          case PayBill(bill, card) => "Ok".some
+          case PayBill(bill, card) => payBill(bill, card)
           case CheckBill(bill)     => check(bill)
         }
       }
 
       def onApplicative[X, T[_]: Traverse](ms: T[BillOp[X]]): T[X] Either BillOp[T[X]] =
         Left(ms.map {
-          case PayBill(bill, card) => "OK".some
+          case PayBill(bill, card) => payBill(bill, card)
           case CheckBill(bill)     => check(bill)
         })
     })(m)

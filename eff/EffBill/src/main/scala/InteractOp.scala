@@ -8,6 +8,7 @@ import org.atnos.eff.all._
 
 import cats.implicits._
 import org.atnos.eff._, interpret._
+
 sealed trait InteractOp[A]
 
 sealed trait Result

@@ -26,8 +26,6 @@ object EffBasicApp extends App {
       _       <- Tell(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack = Fx.fx3[InteractOp, BillOp, Writer[String, ?]]
-  val (result, logs) =
-    program[Stack].logTimes[InteractOp].runBill.runInteract.runWriter.run
-  logs.foreach(println)
+  type Stack = Fx.fx2[InteractOp, BillOp]
+  program[Stack].runBill.runInteract.run
 }
