@@ -8,7 +8,7 @@ import org.atnos.eff.all._
 import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
-object EffBasicOptionApp extends App {
+object EffBasicLogTimesApp extends App {
 
   import org.atnos.eff._
   import InteractOp._
@@ -42,9 +42,12 @@ object EffBasicOptionApp extends App {
       _          <- Tell(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack = Fx.fx3[InteractOp, BillOp, Option]
-  val result =
-    program[Stack].runBill.runInteract.runOption.run
-  println(result)
+  type Stack = Fx.fx4[InteractOp, BillOp, Writer[String, ?], Option]
+  //val result =
+  // program[Stack].logTimes[InteractOp].runBill.runInteract.runWriter.runOption.run
+  //println(result)
 
+  val (result, logs) =
+    program[Stack].logTimes[BillOp].runBill.runInteract.runOption.runWriter.run
+  logs.foreach(println)
 }

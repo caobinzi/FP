@@ -11,7 +11,8 @@ import org.atnos.eff._, interpret._
 sealed trait BillOp[A]
 
 case class CheckBill(bill: String) extends BillOp[Boolean]
-case class PayBill(bill:   String, card: String) extends BillOp[Option[String]]
+
+case class PayBill(bill: String, card: String) extends BillOp[Option[String]]
 
 object BillOp {
   import org.atnos.eff._
