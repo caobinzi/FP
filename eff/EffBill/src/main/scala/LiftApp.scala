@@ -16,15 +16,31 @@ object EffOptionApp extends App {
   import EffHelper._
   import LogHelper._
 
+  def checkInput[R: _interact](input: String): Eff[R, Option[String]] =
+    (Check(input): Eff[R, Result]) >>= { r =>
+      r match {
+        case Continue => Eff.pure(input.some)
+        case Stop     => Eff.pure(None)
+        case AskAgain => askBill[R]
+      }
+    }
+
+  def askBill[R: _interact]: Eff[R, Option[String]] =
+    for {
+      input <- Ask("Please type in your bill reference or type 0 to stop")
+      bill  <- checkInput(input)
+    } yield bill
+
   def program[R: _interact: _dataOp]: Eff[R, Unit] =
     for {
       bill    <- Ask("Please type in your bill reference ")
       cats    <- Tell(s"Your bill reference: ${bill}")
       card    <- Ask("Please type in your credit card info ")
       cats    <- Tell(s"Your credit card is : ${card}, we are processing now")
-      receipt <- PaymentAdvice(bill, card)
+      receipt <- PayBill(bill, card)
       _       <- Tell(s"Your payment refrence is ${receipt}")
     } yield ()
+
   type Stack6 = Fx.fx3[InteractOp, BillOp, Writer[String, ?]]
   val (r6, logs6) =
     program[Stack6].logTimes[InteractOp].runBill.runInteract.runWriter.run

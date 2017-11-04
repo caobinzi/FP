@@ -10,9 +10,14 @@ import cats.implicits._
 import org.atnos.eff._, interpret._
 sealed trait InteractOp[A]
 
+sealed trait Result
+case object Continue extends Result
+case object AskAgain extends Result
+case object Stop extends Result
+
 case class Ask(prompt: String) extends InteractOp[String]
 case class Tell(msg:   String) extends InteractOp[Unit]
-case object Stop extends InteractOp[Unit]
+case class Check(msg:  String) extends InteractOp[Result]
 
 object InteractOp {
   import org.atnos.eff._
