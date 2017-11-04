@@ -8,28 +8,13 @@ import org.atnos.eff.all._
 import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
-object EffOptionApp extends App {
+object EffBasicApp extends App {
 
   import org.atnos.eff._
   import InteractOp._
   import BillOp._
   import EffHelper._
   import LogHelper._
-
-  def checkInput[R: _interact](input: String): Eff[R, Option[String]] =
-    (Check(input): Eff[R, Result]) >>= { r =>
-      r match {
-        case Continue => Eff.pure(input.some)
-        case Stop     => Eff.pure(None)
-        case AskAgain => askBill[R]
-      }
-    }
-
-  def askBill[R: _interact]: Eff[R, Option[String]] =
-    for {
-      input <- Ask("Please type in your bill reference or type 0 to stop")
-      bill  <- checkInput(input)
-    } yield bill
 
   def program[R: _interact: _dataOp]: Eff[R, Unit] =
     for {
@@ -41,8 +26,8 @@ object EffOptionApp extends App {
       _       <- Tell(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack6 = Fx.fx3[InteractOp, BillOp, Writer[String, ?]]
-  val (r6, logs6) =
-    program[Stack6].logTimes[InteractOp].runBill.runInteract.runWriter.run
-  logs6.foreach(println)
+  type Stack = Fx.fx3[InteractOp, BillOp, Writer[String, ?]]
+  val (result, logs) =
+    program[Stack].logTimes[InteractOp].runBill.runInteract.runWriter.run
+  logs.foreach(println)
 }

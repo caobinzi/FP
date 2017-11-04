@@ -36,16 +36,24 @@ object InteractOp {
       }
       def tell(msg: String) = println(msg)
 
+      def check(msg: String): Result = msg match {
+        case "0" => Stop
+        case "1" => AskAgain
+        case _   => Continue
+      }
+
       def onEffect[X](i: InteractOp[X]): X Either Eff[m.Out, A] =
         i match {
           case Ask(prompt) => Left(ask(prompt))
           case Tell(msg)   => Left(tell(msg))
+          case Check(msg)  => Left(check(msg))
         }
 
       def onApplicative[X, T[_]: Traverse](ms: T[InteractOp[X]]): T[X] Either InteractOp[T[X]] =
         Left(ms.map {
           case Ask(prompt) => ask(prompt)
           case Tell(msg)   => tell(msg)
+          case Check(msg)  => check(msg)
         })
 
     })(m)
