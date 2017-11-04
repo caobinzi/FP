@@ -43,8 +43,6 @@ object EffBasicOptionApp extends App {
     } yield ()
 
   type Stack = Fx.fx3[InteractOp, BillOp, Option]
-  val result =
-    program[Stack].runBill.runInteract.runOption.run
-  println(result)
+  program[Stack].runBill.runInteract.runOption.run
 
 }

@@ -43,9 +43,6 @@ object EffBasicLogTimesApp extends App {
     } yield ()
 
   type Stack = Fx.fx4[InteractOp, BillOp, Writer[String, ?], Option]
-  //val result =
-  // program[Stack].logTimes[InteractOp].runBill.runInteract.runWriter.runOption.run
-  //println(result)
 
   val (result, logs) =
     program[Stack].logTimes[BillOp].runBill.runInteract.runOption.runWriter.run
