@@ -38,7 +38,7 @@ object BankOp {
         })
     })(m)
   }
-  implicit class Bill[R, A](effect: Eff[R, A]) {
+  implicit class Bank[R, A](effect: Eff[R, A]) {
     def runBank(implicit m:         BankOp <= R): Eff[m.Out, A] =
       runBankOp[R, A](effect)
 

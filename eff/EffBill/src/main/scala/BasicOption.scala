@@ -12,6 +12,7 @@ object EffBasicOptionApp extends App {
 
   import org.atnos.eff._
   import IvrOp._
+  import BankOp._
   import BillOp._
   import EffHelper._
   import LogHelper._
@@ -19,8 +20,8 @@ object EffBasicOptionApp extends App {
   def checkInput[R: _ivr](input: String): Eff[R, Option[String]] =
     (CheckInput(input): Eff[R, Result]) >>= { r =>
       r match {
-        case Continue => Eff.pure(input.some)
-        case Stop     => Eff.pure(None)
+        case Continue     => Eff.pure(input.some)
+        case Stop         => Eff.pure(None)
         case RequestAgain => askBill[R]
       }
     }
@@ -31,18 +32,19 @@ object EffBasicOptionApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
-  def program[R: _ivr: _dataOp: _option]: Eff[R, Unit] =
+  def program[R: _ivr: _dataOp: _bankOp: _option]: Eff[R, Unit] =
     for {
       billOption <- askBill
       bill       <- fromOption(billOption)
-      cats       <- Response(s"Your bill reference: ${bill}")
+      _          <- Response(s"Your bill reference: ${bill}")
       card       <- Request("Please type in your credit card info ")
-      cats       <- Response(s"Your credit card is : ${card}, we are processing now")
-      receipt    <- UpdateBill(bill, card)
+      _          <- Response(s"Your credit card is : ${card}, we are processing now")
+      reference  <- Purchase(bill, card)
+      receipt    <- UpdateBill(bill, "Paid")
       _          <- Response(s"Your payment refrence is ${receipt}")
     } yield ()
 
-  type Stack = Fx.fx3[IvrOp, BillOp, Option]
-  program[Stack].runBill.runIvr.runOption.run
+  type Stack = Fx.fx4[IvrOp, BillOp, BankOp, Option]
+  program[Stack].runBill.runIvr.runBank.runOption.run
 
 }
