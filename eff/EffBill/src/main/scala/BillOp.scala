@@ -10,9 +10,9 @@ import org.atnos.eff._, interpret._
 
 sealed trait BillOp[A]
 
-case class CheckInputBill(bill: String) extends BillOp[Boolean]
+case class CheckBill(bill: String) extends BillOp[Boolean]
 
-case class PayBill(bill: String, card: String) extends BillOp[Option[String]]
+case class UpdateBill(bill: String, status: String) extends BillOp[Option[String]]
 
 object BillOp {
   import org.atnos.eff._
@@ -27,15 +27,15 @@ object BillOp {
 
       def onEffect[X](i: BillOp[X]): X Either Eff[m.Out, A] = Left {
         i match {
-          case PayBill(bill, card) => payBill(bill, card)
-          case CheckInputBill(bill)     => check(bill)
+          case UpdateBill(bill, card) => payBill(bill, card)
+          case CheckBill(bill)        => check(bill)
         }
       }
 
       def onApplicative[X, T[_]: Traverse](ms: T[BillOp[X]]): T[X] Either BillOp[T[X]] =
         Left(ms.map {
-          case PayBill(bill, card) => payBill(bill, card)
-          case CheckInputBill(bill)     => check(bill)
+          case UpdateBill(bill, card) => payBill(bill, card)
+          case CheckBill(bill)        => check(bill)
         })
     })(m)
   }

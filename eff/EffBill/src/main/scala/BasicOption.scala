@@ -38,7 +38,7 @@ object EffBasicOptionApp extends App {
       cats       <- Response(s"Your bill reference: ${bill}")
       card       <- Request("Please type in your credit card info ")
       cats       <- Response(s"Your credit card is : ${card}, we are processing now")
-      receipt    <- PayBill(bill, card)
+      receipt    <- UpdateBill(bill, card)
       _          <- Response(s"Your payment refrence is ${receipt}")
     } yield ()
 

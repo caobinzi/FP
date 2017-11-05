@@ -34,7 +34,7 @@ object EffStupidLogApp extends App {
       cats    <- Response(s"Your credit card is : ${card}, we are processing now")
       _       <- tell("<<<${getTimeStamp}>>>:Response for card info End")
       _       <- tell("<<<${getTimeStamp}>>>:Processing Bill Start")
-      receipt <- PayBill(bill, card)
+      receipt <- UpdateBill(bill, card)
       _       <- tell("<<<${getTimeStamp}>>>:Processing Bill End")
       _       <- tell("<<<${getTimeStamp}>>>:Response for receipt Start")
       _       <- Response(s"Your payment refrence is ${receipt}")

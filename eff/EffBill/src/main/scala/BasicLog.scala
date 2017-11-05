@@ -42,7 +42,7 @@ object EffBasicLogApp extends App {
       _          <- Response(s"Your bill reference: ${bill}")
       card       <- Request("Please type in your credit card info ")
       _          <- Response(s"Your credit card is : ${card}, we are processing now")
-      receipt    <- PayBill(bill, card)
+      receipt    <- UpdateBill(bill, card)
       _          <- Response(s"Your payment refrence is ${receipt}")
       _          <- tell("We have finished everyting")
     } yield ()
