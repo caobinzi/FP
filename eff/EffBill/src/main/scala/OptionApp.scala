@@ -22,17 +22,17 @@ object EffBasicOptionApp extends App {
       r match {
         case Continue     => Eff.pure(input.some)
         case Stop         => Eff.pure(None)
-        case RequestAgain => askBill[R]
+        case RequestAgain => askForBill[R]
       }
     }
 
-  def askBill[R: _ivr]: Eff[R, Option[String]] =
+  def askForBill[R: _ivr]: Eff[R, Option[String]] =
     for {
       input <- Request("Please type in your bill reference or type 0 to stop")
       bill  <- checkInput(input)
     } yield bill
 
-  def finish[R: _ivr: _dataOp](
+  def finishCall[R: _ivr: _dataOp](
       bill:      String,
       reference: Option[String]
   ): Eff[R, Unit] = {
@@ -49,13 +49,13 @@ object EffBasicOptionApp extends App {
   }
   def program[R: _ivr: _dataOp: _bankOp: _option]: Eff[R, Unit] =
     for {
-      billOption <- askBill
+      billOption <- askForBill
       bill       <- fromOption(billOption)
       _          <- Response(s"Your bill reference: ${bill}")
       card       <- Request("Please type in your credit card info ")
       _          <- Response(s"Your credit card is : ${card}, we are processing now")
       reference  <- Purchase(bill, card)
-      receipt    <- finish(bill, reference)
+      receipt    <- finishCall(bill, reference)
     } yield ()
 
   type Stack = Fx.fx4[IvrOp, BillOp, BankOp, Option]
