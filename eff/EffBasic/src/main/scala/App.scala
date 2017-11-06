@@ -27,6 +27,8 @@ object EffApp extends App {
     } yield a
 
   println(program[Stack].runReader(6).runWriter.runEval.run)
+  //(64,List(the required power is 6, the result is 64))
   println(program[Stack].runWriter.runReader(6).runEval.run)
+  //(64,List(the required power is 6, the result is 64))
 
 }
