@@ -13,6 +13,7 @@ object EffBasicLogApp extends App {
   import org.atnos.eff._
   import IvrOp._
   import BillOp._
+  import BankOp._
   import EffHelper._
   import LogHelper._
 
@@ -31,10 +32,26 @@ object EffBasicLogApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
+  def finishCall[R: _ivr: _dataOp](
+      bill:      String,
+      reference: Option[String]
+  ): Eff[R, Unit] = {
+    reference match {
+      case Some(s) =>
+        for {
+          receipt <- UpdateBill(bill, s)
+          _       <- Response(s"Your payment refrence is ${receipt}")
+        } yield ()
+      case _ =>
+        Response(s"We can't process your payment, please contact the customer service")
+    }
+
+  }
+
   type WriterString[A]  = Writer[String, A]
   type _writerString[R] = WriterString |= R
 
-  def program[R: _ivr: _dataOp: _option: _writerString]: Eff[R, Unit] =
+  def program[R: _ivr: _dataOp: _bankOp: _option: _writerString]: Eff[R, Unit] =
     for {
       _          <- tell("A customer called in, let's start ")
       billOption <- askBill
@@ -42,12 +59,13 @@ object EffBasicLogApp extends App {
       _          <- Response(s"Your bill reference: ${bill}")
       card       <- Request("Please type in your credit card info ")
       _          <- Response(s"Your credit card is : ${card}, we are processing now")
-      receipt    <- UpdateBill(bill, card)
+      reference  <- Purchase(bill, card)
+      receipt    <- finishCall(bill, reference)
       _          <- Response(s"Your payment refrence is ${receipt}")
       _          <- tell("We have finished everyting")
     } yield ()
 
-  type Stack = Fx.fx4[IvrOp, BillOp, Option, WriterString]
-  program[Stack].runBill.runIvr.runOption.runWriter.run
+  type Stack = Fx.fx5[IvrOp, BankOp, BillOp, Option, WriterString]
+  program[Stack].runBill.runIvr.runBank.runOption.runWriter.run
 
 }
