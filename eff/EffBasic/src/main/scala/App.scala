@@ -13,10 +13,10 @@ object EffApp extends App {
   type ReaderInt[A]    = Reader[Int, A]
   type WriterString[A] = Writer[String, A]
 
-  type Stack = Fx.fx3[WriterString, ReaderInt, Eval]
-
   type _readerInt[R]    = ReaderInt |= R
   type _writerString[R] = WriterString |= R
+
+  type Stack = Fx.fx3[WriterString, ReaderInt, Eval]
 
   def program[R: _readerInt: _writerString: _eval]: Eff[R, Int] =
     for {

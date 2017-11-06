@@ -16,6 +16,7 @@ case class UpdateBill(bill: String, status: String) extends BillOp[Option[String
 
 object BillOp {
   import org.atnos.eff._
+
   type _dataOp[R] = BillOp |= R
   def runBillOp[R, A](effect: Eff[R, A])(implicit m: BillOp <= R): Eff[m.Out, A] = {
     val memDataSet = new scala.collection.mutable.ListBuffer[String]
@@ -39,6 +40,7 @@ object BillOp {
         })
     })(m)
   }
+
   implicit class Bill[R, A](effect: Eff[R, A]) {
     def runBill(implicit m:         BillOp <= R): Eff[m.Out, A] =
       runBillOp[R, A](effect)

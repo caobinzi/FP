@@ -30,4 +30,13 @@ object EffBasicApp extends App {
 
   type Stack = Fx.fx3[IvrOp, BillOp, BankOp]
   program[Stack].runBill.runIvr.runBank.run
+
+  // Please type in your bill reference
+  //1
+  //Your bill reference: 1
+  //Please type in your credit card info
+  //2
+  //Your credit card is : 2, we are processing now
+  //Your payment refrence is Some(Ok)
+
 }

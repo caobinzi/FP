@@ -19,5 +19,6 @@ object Test extends App {
   val b = 111.point[MyMonad2]
   //b: MyMonad2[Int] = ListT(EitherT(Some(\/-(List(111)))))
 
+  type MyMonad3[A] = ListT[EitherT[Option, String, ?], A]
   println(a)
 }
