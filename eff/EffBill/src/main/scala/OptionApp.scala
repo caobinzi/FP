@@ -32,18 +32,30 @@ object EffBasicOptionApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
+  def finish[R: _ivr: _dataOp](
+      bill:      String,
+      reference: Option[String]
+  ): Eff[R, Unit] = {
+    reference match {
+      case Some(s) =>
+        for {
+          receipt <- UpdateBill(bill, s)
+          _       <- Response(s"Your payment refrence is ${receipt}")
+        } yield ()
+      case _ =>
+        Response(s"We can't process your payment, please contact the customer service")
+    }
+
+  }
   def program[R: _ivr: _dataOp: _bankOp: _option]: Eff[R, Unit] =
     for {
-      billOption      <- askBill
-      bill            <- fromOption(billOption)
-      _               <- Response(s"Your bill reference: ${bill}")
-      card            <- Request("Please type in your credit card info ")
-      _               <- Response(s"Your credit card is : ${card}, we are processing now")
-      referenceOption <- Purchase(bill, card)
-      reference       <- fromOption(referenceOption)
-
-      receipt <- UpdateBill(bill, reference)
-      _       <- Response(s"Your payment refrence is ${receipt}")
+      billOption <- askBill
+      bill       <- fromOption(billOption)
+      _          <- Response(s"Your bill reference: ${bill}")
+      card       <- Request("Please type in your credit card info ")
+      _          <- Response(s"Your credit card is : ${card}, we are processing now")
+      reference  <- Purchase(bill, card)
+      receipt    <- finish(bill, reference)
     } yield ()
 
   type Stack = Fx.fx4[IvrOp, BillOp, BankOp, Option]
