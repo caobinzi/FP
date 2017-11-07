@@ -17,7 +17,7 @@ object EffBasicApp extends App {
   import EffHelper._
   import LogHelper._
 
-  def program[R: _ivr: _billOp: _bankOp]: Eff[R, Unit] =
+  def program[R: _ivrOp: _billOp: _bankOp]: Eff[R, Unit] =
     for {
       bill      <- Request("Please type in your bill reference ")
       _         <- Response(s"Your bill reference: ${bill}")

@@ -17,7 +17,7 @@ object EffBasicLogApp extends App {
   import EffHelper._
   import LogHelper._
 
-  def checkInput[R: _ivr](input: String): Eff[R, Option[String]] =
+  def checkInput[R: _ivrOp](input: String): Eff[R, Option[String]] =
     (CheckInput(input): Eff[R, Result]) >>= { r =>
       r match {
         case Continue     => Eff.pure(input.some)
@@ -26,13 +26,13 @@ object EffBasicLogApp extends App {
       }
     }
 
-  def askBill[R: _ivr]: Eff[R, Option[String]] =
+  def askBill[R: _ivrOp]: Eff[R, Option[String]] =
     for {
       input <- Request("Please type in your bill reference or type 0 to stop")
       bill  <- checkInput(input)
     } yield bill
 
-  def finishCall[R: _ivr: _billOp](
+  def finishCall[R: _ivrOp: _billOp](
       bill:      String,
       reference: Option[String]
   ): Eff[R, Unit] = {
@@ -51,7 +51,7 @@ object EffBasicLogApp extends App {
   type WriterString[A]  = Writer[String, A]
   type _writerString[R] = WriterString |= R
 
-  def program[R: _ivr: _billOp: _bankOp: _option: _writerString]: Eff[R, Unit] =
+  def program[R: _ivrOp: _billOp: _bankOp: _option: _writerString]: Eff[R, Unit] =
     for {
       _          <- tell("A customer called in, let's start ")
       billOption <- askBill

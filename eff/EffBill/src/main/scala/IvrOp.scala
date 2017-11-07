@@ -22,7 +22,7 @@ case class CheckInput(msg:  String) extends IvrOp[Result]
 
 object IvrOp {
   import org.atnos.eff._
-  type _ivr[R]    = IvrOp |= R
+  type _ivrOp[R]    = IvrOp |= R
   type WriterString[A] = Writer[String, A]
   def myDate = new java.util.Date
   def readLine(): String = scala.io.StdIn.readLine()
