@@ -15,8 +15,8 @@ case class Refund(bill:   String, card: String) extends BankOp[Option[String]]
 
 object BankOp {
   import org.atnos.eff._
-  type _bankOp[R] = BankOp |= R
 
+  type _bankOp[R] = BankOp |= R
   def purchase[R: _bankOp](bill: String, card: String): Eff[R, Option[String]] =
     Eff.send[BankOp, R, Option[String]](Purchase(bill, card))
 
