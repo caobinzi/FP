@@ -15,24 +15,19 @@ object EffOptionApp extends App {
   import EffHelper._
   type _option[R] = Option |= R
 
-  def program[R: _kvstore: _option]: Eff[R, Boolean] =
+  def program[R: _kvstore]: Eff[R, Unit] =
     for {
-      _        <- fromOption(2.some)
-      continue <- fromOption(true.some)
-      _        <- Put("wild-cats", 2)
-      _        <- Put("tame-cats", 5)
-      n        <- Get("wild-cats")
+      _ <- Put("wild-cats", 2)
+      _ <- Put("tame-cats", 5)
+      n <- Get("wild-cats")
       r = n.map(_ * 2)
       _ <- Delete("tame-cats")
-    } yield continue
+    } yield ()
 
-  def done[R: _kvstore]: Eff[R, Boolean] =
-    for {
-      continue <- Check
-    } yield { println(s"-------Continue is ${continue}"); continue }
+  def done[R: _kvstore]: Eff[R, Boolean] = Check
 
-  type TT = Fx.fx2[Option, KVStore]
-  val pp      = program[TT].untilM_(done[TT])
+  type Stack = Fx.fx2[Option, KVStore]
+  val pp      = program[Stack].untilM_(done[Stack])
   val result1 = UnSafeIter.runKVStoreUnsafe(pp).runOption.run
 
   println(result1)
