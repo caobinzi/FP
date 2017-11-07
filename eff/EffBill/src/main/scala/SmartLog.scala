@@ -32,7 +32,7 @@ object EffBasicLogTimesApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
-  def program[R: _ivr: _dataOp: _bankOp: _option]: Eff[R, Unit] =
+  def program[R: _ivr: _billOp: _bankOp: _option]: Eff[R, Unit] =
     for {
       billOption <- askBill
       bill       <- fromOption(billOption)

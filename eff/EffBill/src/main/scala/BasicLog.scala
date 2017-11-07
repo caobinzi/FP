@@ -32,7 +32,7 @@ object EffBasicLogApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
-  def finishCall[R: _ivr: _dataOp](
+  def finishCall[R: _ivr: _billOp](
       bill:      String,
       reference: Option[String]
   ): Eff[R, Unit] = {
@@ -51,7 +51,7 @@ object EffBasicLogApp extends App {
   type WriterString[A]  = Writer[String, A]
   type _writerString[R] = WriterString |= R
 
-  def program[R: _ivr: _dataOp: _bankOp: _option: _writerString]: Eff[R, Unit] =
+  def program[R: _ivr: _billOp: _bankOp: _option: _writerString]: Eff[R, Unit] =
     for {
       _          <- tell("A customer called in, let's start ")
       billOption <- askBill

@@ -20,7 +20,7 @@ object EffStupidLogApp extends App {
   type _writerString[R] = WriterString |= R
 
   def getTimeStamp = s"${new java.util.Date}"
-  def program[R: _ivr: _dataOp: _bankOp: _writerString]: Eff[R, Unit] =
+  def program[R: _ivr: _billOp: _bankOp: _writerString]: Eff[R, Unit] =
     for {
       _         <- tell("<<<${getTimeStamp}>>>:Request for bill reference Start")
       bill      <- Request("Please type in your bill reference ")

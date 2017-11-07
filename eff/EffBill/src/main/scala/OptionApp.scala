@@ -32,7 +32,7 @@ object EffBasicOptionApp extends App {
       bill  <- checkInput(input)
     } yield bill
 
-  def finishCall[R: _ivr: _dataOp](
+  def finishCall[R: _ivr: _billOp](
       bill:      String,
       reference: Option[String]
   ): Eff[R, Unit] = {
@@ -47,7 +47,7 @@ object EffBasicOptionApp extends App {
     }
 
   }
-  def program[R: _ivr: _dataOp: _bankOp: _option]: Eff[R, Unit] =
+  def program[R: _ivr: _billOp: _bankOp: _option]: Eff[R, Unit] =
     for {
       billOption <- askForBill
       bill       <- fromOption(billOption)
