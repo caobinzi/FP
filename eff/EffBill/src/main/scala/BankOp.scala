@@ -16,6 +16,10 @@ case class Refund(bill:   String, card: String) extends BankOp[Option[String]]
 object BankOp {
   import org.atnos.eff._
   type _bankOp[R] = BankOp |= R
+
+  def purchase[R: _bankOp](bill: String, card: String): Eff[R, Option[String]] =
+    Eff.send[BankOp, R, Option[String]](Purchase(bill, card))
+
   def runBankOp[R, A](effect: Eff[R, A])(implicit m: BankOp <= R): Eff[m.Out, A] = {
     val memDataSet = new scala.collection.mutable.ListBuffer[String]
 
