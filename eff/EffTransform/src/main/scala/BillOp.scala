@@ -26,19 +26,12 @@ object BillOp {
         case CheckBill(bill)        => Now(true)
       }
   }
-  def runBillOp[R, BR, U, A](effect: Eff[R, A])(
-    implicit
-    sr: Member.Aux[BillOp, R, U],
-    br: Member.Aux[Eval, BR, U]
-  ): Eff[BR, A] = {
-    transform(effect, nt)
-  }
 
   implicit class Bill[R, BR, U, A](effect: Eff[R, A]) {
     def runBill(implicit
       sr: Member.Aux[BillOp, R, U],
                 br: Member.Aux[Eval, BR, U]): Eff[BR, A] =
-      runBillOp[R, BR, U, A](effect)
+      transform(effect, nt)
 
   }
 }
