@@ -16,9 +16,10 @@ object EffTransformApp extends App {
     import BillOp._
     import BankOp._
     import EffHelper._
+    import LogOp._
     import LogHelper._
 
-    def program[R: _ivrOp: _billOp: _bankOp]: Eff[R, Unit] =
+    def program[R: _ivrOp: _billOp: _bankOp: _logOp]: Eff[R, Unit] =
       for {
         bill <- Request("Please type in your bill reference ")
         _ <- Response(s"Your bill reference: ${bill}")
@@ -29,8 +30,8 @@ object EffTransformApp extends App {
         _ <- Response(s"Your payment refrence is ${receipt}")
       } yield ()
 
-    type Stack = Fx.fx4[IvrOp, BillOp, BankOp, Eval]
-    program[Stack].logTimes[IvrOp].runIvr.runBank.runBill.runEval.run
+    type Stack = Fx.fx5[IvrOp, BillOp, BankOp, Eval, LogOp]
+    program[Stack].logTimes[IvrOp].logTimes[BillOp].runIvr.runBank.runBill.runLog.runEval.run
   }
   println(run)
 
