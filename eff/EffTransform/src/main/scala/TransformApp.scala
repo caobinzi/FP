@@ -29,10 +29,10 @@ object EffTransformApp extends App {
         _ <- Response(s"Your payment refrence is ${receipt}")
       } yield ()
 
-    type Stack = Fx.fx3[IvrOp, BillOp, BankOp]
-    program[Stack].runIvr.runBank.runBill.run
+    type Stack = Fx.fx4[IvrOp, BillOp, BankOp, Eval]
+    program[Stack].logTimes[IvrOp].runIvr.runBank.runBill.runEval.run
   }
-  run
+  println(run)
 
   // Please type in your bill reference
   //1
