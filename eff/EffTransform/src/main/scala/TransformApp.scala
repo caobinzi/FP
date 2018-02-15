@@ -8,7 +8,7 @@ import org.atnos.eff.all._
 import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
-object EffBasicApp extends App {
+object EffTransformApp extends App {
 
   def run = {
     import org.atnos.eff._
@@ -30,7 +30,7 @@ object EffBasicApp extends App {
       } yield ()
 
     type Stack = Fx.fx3[IvrOp, BillOp, BankOp]
-    program[Stack].runIvr.runBank.runBill.runEval.run
+    program[Stack].runIvr.runBank.runBill.run
   }
   run
 
