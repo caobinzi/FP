@@ -4,4 +4,8 @@ import scalaz._
 import Scalaz._
 
 case class User(userName: String)
-object ErroApp extends App {}
+object ErroApp extends App {
+
+  Validate.run
+
+}

@@ -61,4 +61,13 @@ object Validate {
       ).reduce(_ |+| _)
     checkResult.map(_ => User(userName))
   }
+  def run = {
+    changePassword("user", "pwd") match {
+      case Success(s) =>
+        println(s"Got user ${s}")
+      case Failure(error) =>
+        println(s"Got error: ${error.toList.mkString(",")}")
+    }
+
+  }
 }
