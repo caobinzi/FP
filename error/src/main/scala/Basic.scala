@@ -29,4 +29,13 @@ object Basic {
     }
     return Right(User(userName))
   }
+  def run = {
+    changePassword("user", "pwd") match {
+      case Left(error) =>
+        println(s"Got error: ${error.toList.mkString(",")}")
+      case Right(s) =>
+        println(s"Got user ${s}")
+    }
+  }
+
 }
