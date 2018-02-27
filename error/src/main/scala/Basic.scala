@@ -1,4 +1,9 @@
 object Basic {
+  //Some problems in below code
+  //1. Each check may be from differnt systems, the will be code hard to maintain if there are
+  //more than 20 checks, disable some of the checks might be hard
+  //2. Changing any check will need to modify this big function, can I put it somewhere else
+  //3. I also want to get all the errors instead of returning them one by one
   def changePassword(
       userName: String,
       password: String
