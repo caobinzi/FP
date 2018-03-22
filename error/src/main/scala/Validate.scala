@@ -4,13 +4,13 @@ object Validate {
 
   def checkUserDb(
       userName: String
-  ): ValidationNel[String, Unit] = {
+  ): ValidationNel[String, Int] = {
     val userDb = List("User1", "User2")
     userDb
       .contains(userName)
       .fold(
         f = ("User does not exist").failureNel,
-        t = ().successNel
+        t = 1.successNel
       )
   }
 
@@ -54,6 +54,17 @@ object Validate {
       .fold(
         t = "password has been used before".failureNel,
         f = ().successNel
+      )
+  }
+
+  def sendUserEmail(
+      id: Int
+  ): ValidationNel[String, String] = {
+
+    (id === 1)
+      .fold(
+        f = "Invalid user Id".failureNel,
+        t = "jack@email.com".successNel
       )
   }
 
