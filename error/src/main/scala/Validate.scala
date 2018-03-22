@@ -57,29 +57,4 @@ object Validate {
       )
   }
 
-  def changePassword(
-      userName: String,
-      password: String
-  ): ValidationNel[String, User] = {
-
-    val checkResult =
-      List(
-        checkUserDb(userName),
-        checkPasswordFromBlackList(password),
-        checkLongPassword(password),
-        checkShortPassword(password),
-        checkUsedPassword(password)
-      ).reduce(_ |+| _)
-
-    //If it is ok, return the userName anyway
-    checkResult.map(_ => User(userName))
-  }
-  def run = {
-    changePassword("user", "pwd") match {
-      case Success(s) =>
-        println(s"Got user ${s}")
-      case Failure(error) =>
-        println(s"Got error: ${error.toList.mkString(",")}")
-    }
-  }
 }
