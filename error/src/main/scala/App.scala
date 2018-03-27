@@ -19,7 +19,7 @@ object ErroApp extends App {
 
   prg match {
     case Success(s) =>
-      println(s"Got user ${s}")
+      println(s"All good, Result:  ${s}")
     case Failure(error) =>
       println(s"Got error: ${error.toList.mkString(",")}")
 
@@ -29,17 +29,17 @@ object ErroApp extends App {
 
   val checkOnly = List(
     checkUserDb("User1aa").map(_ => ()),
-    checkPasswordFromBlackList("a good password"),
+    checkPasswordFromBlackList("bad1jj"),
     checkLongPassword("a good password"),
-    checkShortPassword("a good password"),
-    checkUsedPassword("a good password")
+    checkShortPassword("short"),
+    checkUsedPassword("usedpwd1")
   ).reduce(_ |+| _)
 
   checkOnly match {
     case Success(s) =>
       println(s"Check passed")
     case Failure(error) =>
-      println(s"Got error: ${error.toList.mkString(",")}")
+      println(s"Check failed: ${error.toList.mkString(", ")}")
 
   }
 
