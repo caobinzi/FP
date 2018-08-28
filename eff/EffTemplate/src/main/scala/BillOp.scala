@@ -29,13 +29,13 @@ object BillOp {
       }
   }
 
-  implicit class Bill[R, U, A](effect: Eff[R, A]) {
+  implicit class Bill[SR, BR, U, A](effect: Eff[SR, A]) {
 
     def runBill(
-        implicit sr: Member.Aux[BillOp, R, U],
-        br:          Member.Aux[Eval, R, U]
+        implicit sr: Member.Aux[BillOp, SR, U],
+        br:          Member.Aux[Eval, BR, U]
     ) =
-      transform(effect, nt).runEval
+      transform(effect, nt)
 
   }
 }

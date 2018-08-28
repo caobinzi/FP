@@ -21,17 +21,28 @@ object EffTransformApp extends App {
 
     def program[R: _ivrOp: _billOp: _bankOp: _logOp]: Eff[R, Unit] =
       for {
-        bill <- Request("Please type in your bill reference ")
-        _ <- Response(s"Your bill reference: ${bill}")
-        card <- Request("Please type in your credit card info ")
-        _ <- Response(s"Your credit card is : ${card}, we are processing now")
+        bill      <- Request("Please type in your bill reference ")
+        _         <- Response(s"Your bill reference: ${bill}")
+        card      <- Request("Please type in your credit card info ")
+        _         <- Response(s"Your credit card is : ${card}, we are processing now")
         reference <- Purchase(bill, card)
-        receipt <- UpdateBill(bill, "Paid")
-        _ <- Response(s"Your payment refrence is ${receipt}")
+        receipt   <- UpdateBill(bill, "Paid")
+        _         <- Response(s"Your payment refrence is ${receipt}")
       } yield ()
 
-    type Stack = Fx.fx5[IvrOp, BillOp, BankOp, Eval, LogOp]
-    program[Stack].logTimes[IvrOp].logTimes[BillOp].runIvr.runBank.runBill.runLog.runEval.run
+    type Stack = Fx.fx4[IvrOp, BillOp, BankOp, LogOp]
+    program[Stack]
+      .logTimes[IvrOp]
+      .logTimes[BillOp]
+      .runIvr
+      .runBank
+      .runBill
+      .runLog
+      .runEval
+      .runEval
+      .runEval
+      .runEval
+      .run
   }
   println(run)
 

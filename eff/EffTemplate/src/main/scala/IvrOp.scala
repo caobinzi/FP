@@ -51,11 +51,11 @@ object IvrOp {
       }
   }
 
-  implicit class IVR[R, U, A](effect: Eff[R, A]) {
+  implicit class IVR[SR, BR, U, A](effect: Eff[SR, A]) {
 
-    def runIvr(implicit sr: Member.Aux[IvrOp, R, U],
-               br:          Member.Aux[Eval, R, U]) =
-      transform(effect, nt).runEval
+    def runIvr(implicit sr: Member.Aux[IvrOp, SR, U],
+               br:          Member.Aux[Eval, BR, U]) =
+      transform(effect, nt)
   }
 
 }

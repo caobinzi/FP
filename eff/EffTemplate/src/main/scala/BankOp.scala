@@ -29,13 +29,13 @@ object BankOp {
       }
   }
 
-  implicit class Bank[R, U, A](effect: Eff[R, A]) {
+  implicit class Bank[SR, BR, U, A](effect: Eff[SR, A]) {
 
     def runBank(
-        implicit sr: Member.Aux[BankOp, R, U],
-        br:          Member.Aux[Eval, R, U]
-    ) =
-      transform(effect, nt).runEval
+        implicit sr: Member.Aux[BankOp, SR, U],
+        br:          Member.Aux[Eval, BR, U]
+    ): Eff[BR, A] =
+      transform(effect, nt)
 
   }
 

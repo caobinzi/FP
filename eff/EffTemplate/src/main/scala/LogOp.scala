@@ -26,13 +26,13 @@ object LogOp {
       }
   }
 
-  implicit class Log[R, U, A](effect: Eff[R, A]) {
+  implicit class Log[SR, BR, U, A](effect: Eff[SR, A]) {
 
     def runLog(
-        implicit sr: Member.Aux[LogOp, R, U],
-        br:          Member.Aux[Eval, R, U]
-    ): Eff[U, A] = {
-      transform(effect, nt).runEval
+        implicit sr: Member.Aux[LogOp, SR, U],
+        br:          Member.Aux[Eval, BR, U]
+    ): Eff[BR, A] = {
+      transform(effect, nt)
 
     }
 
