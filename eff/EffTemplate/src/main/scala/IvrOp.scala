@@ -17,12 +17,12 @@ case object RequestAgain extends Result
 case object Stop extends Result
 
 case class Request(prompt: String) extends IvrOp[String]
-case class Response(msg: String) extends IvrOp[Unit]
+case class Response(msg:   String) extends IvrOp[Unit]
 case class CheckInput(msg: String) extends IvrOp[Result]
 
 object IvrOp {
   import org.atnos.eff._
-  type _ivrOp[R] = IvrOp |= R
+  type _ivrOp[R]       = IvrOp |= R
   type WriterString[A] = Writer[String, A]
   def myDate = new java.util.Date
   def readLine(): String = scala.io.StdIn.readLine()
@@ -41,8 +41,8 @@ object IvrOp {
   }
 
   val nt = new (IvrOp ~> Eval) {
-    def apply[A](fa: IvrOp[A]): Eval[A] =
 
+    def apply[A](fa: IvrOp[A]): Eval[A] =
       fa match {
         case Request(prompt) => Now(ask(prompt))
         case Response(msg)   => Now(tell(msg))
@@ -52,7 +52,9 @@ object IvrOp {
   }
 
   implicit class IVR[R, U, A](effect: Eff[R, A]) {
-    def runIvr(implicit sr: Member.Aux[IvrOp, R, U]) =
+
+    def runIvr(implicit sr: Member.Aux[IvrOp, R, U],
+               br:          Member.Aux[Eval, R, U]) =
       transform(effect, nt).runEval
   }
 

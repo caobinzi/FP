@@ -12,7 +12,8 @@ sealed trait BillOp[A]
 
 case class CheckBill(bill: String) extends BillOp[Boolean]
 
-case class UpdateBill(bill: String, status: String) extends BillOp[Option[String]]
+case class UpdateBill(bill: String, status: String)
+    extends BillOp[Option[String]]
 
 object BillOp {
   import org.atnos.eff._
@@ -20,6 +21,7 @@ object BillOp {
   type _billOp[R] = BillOp |= R
 
   val nt = new (BillOp ~> Eval) {
+
     def apply[A](fa: BillOp[A]): Eval[A] =
       fa match {
         case UpdateBill(bill, card) => Now(Some("s"))
@@ -28,7 +30,11 @@ object BillOp {
   }
 
   implicit class Bill[R, U, A](effect: Eff[R, A]) {
-    def runBill(implicit sr: Member.Aux[BillOp, R, U]) =
+
+    def runBill(
+        implicit sr: Member.Aux[BillOp, R, U],
+        br:          Member.Aux[Eval, R, U]
+    ) =
       transform(effect, nt).runEval
 
   }
