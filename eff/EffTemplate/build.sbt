@@ -1,6 +1,6 @@
 name := "EffLiftApp"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.6"
 
 libraryDependencies += "org.atnos" % "eff_2.12" % "5.3.0"
 
