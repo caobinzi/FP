@@ -11,9 +11,13 @@ object EffHelper {
   }
   implicit class RunHelper[SR, BR, U, A](effect: Eff[SR, A]) {
 
-    def runEffect[T[_]](implicit sr: Member.Aux[T, SR, U],
-                        br:          Member.Aux[Eval, BR, U],
-                        nt:          T ~> Eval): Eff[U, A] = {
+    def runEffect[T[_]](
+        nt: T ~> Eval
+    )(
+        implicit
+        sr: Member.Aux[T, SR, U],
+        br: Member.Aux[Eval, BR, U]
+    ): Eff[U, A] = {
       transform(effect, nt).runEval
     }
   }

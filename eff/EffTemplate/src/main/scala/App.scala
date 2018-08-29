@@ -28,10 +28,10 @@ object EffApp extends App {
     program[Stack]
       .logTimes[IvrOp]
       .logTimes[BillOp]
-      .runEffect[IvrOp]
-      .runEffect[BankOp]
-      .runEffect[LogOp]
-      .runEffect[BillOp]
+      .runEffect(IvrIter.nt)
+      .runEffect(BankOp.nt)
+      .runEffect(LogOp.nt)
+      .runEffect(BillOp.nt)
       .run
   }
   println(run)
