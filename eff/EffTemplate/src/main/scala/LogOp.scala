@@ -25,5 +25,4 @@ object LogOp {
         case Info(s) => Now(println(s))
       }
   }
-
 }

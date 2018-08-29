@@ -1,5 +1,3 @@
-import scala.language.higherKinds
-import scala.language.implicitConversions
 import cats._
 import data._
 import org.atnos.eff._

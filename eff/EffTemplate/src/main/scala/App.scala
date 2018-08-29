@@ -1,17 +1,10 @@
-import scala.language.higherKinds
-import scala.language.implicitConversions
-import cats._
-import cats.implicits._
-import data._
 import org.atnos.eff._
 import org.atnos.eff.all._
-import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
 object EffApp extends App {
 
   def run = {
-    import org.atnos.eff._
     import IvrOp._
     import BillOp._
     import BankOp._
@@ -31,6 +24,7 @@ object EffApp extends App {
       } yield ()
 
     type Stack = Fx.fx4[IvrOp, BillOp, BankOp, LogOp]
+
     program[Stack]
       .logTimes[IvrOp]
       .logTimes[BillOp]
