@@ -21,7 +21,7 @@ object LogOp {
 
     def apply[A](fa: LogOp[A]): Eval[A] =
       fa match {
-        case Info(s) => Now(println(s))
+        case Info(s) => Eval.later(println(s))
       }
   }
 }
