@@ -14,7 +14,6 @@ sealed trait LogOp[A]
 case class Info(s: String) extends LogOp[Unit]
 
 object LogOp {
-  import org.atnos.eff._
 
   type _logOp[R] = LogOp |= R
 

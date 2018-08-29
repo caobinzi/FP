@@ -10,7 +10,6 @@ case class UpdateBill(bill: String, status: String)
     extends BillOp[Option[String]]
 
 object BillOp {
-  import org.atnos.eff._
 
   type _billOp[R] = BillOp |= R
 

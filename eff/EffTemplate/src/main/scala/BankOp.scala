@@ -10,7 +10,6 @@ case class Purchase(bill: String, card: String) extends BankOp[Option[String]]
 case class Refund(bill:   String, card: String) extends BankOp[Option[String]]
 
 object BankOp {
-  import org.atnos.eff._
 
   type _bankOp[R] = BankOp |= R
   def purchase(bill: String, card: String) = "Ok".some

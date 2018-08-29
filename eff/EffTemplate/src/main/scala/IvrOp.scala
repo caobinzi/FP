@@ -14,6 +14,5 @@ case class Response(msg:   String) extends IvrOp[Unit]
 case class CheckInput(msg: String) extends IvrOp[Result]
 
 object IvrOp {
-  import org.atnos.eff._
   type _ivrOp[R] = IvrOp |= R
 }

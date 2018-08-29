@@ -4,7 +4,6 @@ import cats.implicits._
 import org.atnos.eff._, interpret._
 
 object BankOpTranslate {
-  import org.atnos.eff._
 
   type _bankOp[R] = BankOp |= R
   def purchase(bill: String, card: String) = "Ok".some
