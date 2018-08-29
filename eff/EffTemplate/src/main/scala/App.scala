@@ -8,7 +8,7 @@ import org.atnos.eff.all._
 import org.atnos.eff.interpret._
 import org.atnos.eff.syntax.all._
 
-object EffTransformApp extends App {
+object EffApp extends App {
 
   def run = {
     import org.atnos.eff._
