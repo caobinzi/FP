@@ -20,23 +20,13 @@ object BankOp {
   def purchase(bill: String, card: String) = "Ok".some
   def check(bill:    String) = bill === "1234"
 
-  val nt = new (BankOp ~> Eval) {
+  implicit val nt = new (BankOp ~> Eval) {
 
     def apply[A](fa: BankOp[A]): Eval[A] =
       fa match {
         case Purchase(bill, card) => Now(purchase(bill, card))
         case Refund(bill, card)   => Now("Ok".some)
       }
-  }
-
-  implicit class Bank[SR, BR, U, A](effect: Eff[SR, A]) {
-
-    def runBank(
-        implicit sr: Member.Aux[BankOp, SR, U],
-        br:          Member.Aux[Eval, BR, U]
-    ): Eff[BR, A] =
-      transform(effect, nt)
-
   }
 
 }

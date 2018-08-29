@@ -18,7 +18,7 @@ object LogOp {
 
   type _logOp[R] = LogOp |= R
 
-  val nt = new (LogOp ~> Eval) {
+  implicit val nt = new (LogOp ~> Eval) {
 
     def apply[A](fa: LogOp[A]): Eval[A] =
       fa match {
@@ -26,15 +26,4 @@ object LogOp {
       }
   }
 
-  implicit class Log[SR, BR, U, A](effect: Eff[SR, A]) {
-
-    def runLog(
-        implicit sr: Member.Aux[LogOp, SR, U],
-        br:          Member.Aux[Eval, BR, U]
-    ): Eff[BR, A] = {
-      transform(effect, nt)
-
-    }
-
-  }
 }

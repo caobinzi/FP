@@ -20,22 +20,12 @@ object BillOp {
 
   type _billOp[R] = BillOp |= R
 
-  val nt = new (BillOp ~> Eval) {
+  implicit val nt = new (BillOp ~> Eval) {
 
     def apply[A](fa: BillOp[A]): Eval[A] =
       fa match {
         case UpdateBill(bill, card) => Now(Some("s"))
         case CheckBill(bill)        => Now(true)
       }
-  }
-
-  implicit class Bill[SR, BR, U, A](effect: Eff[SR, A]) {
-
-    def runBill(
-        implicit sr: Member.Aux[BillOp, SR, U],
-        br:          Member.Aux[Eval, BR, U]
-    ) =
-      transform(effect, nt)
-
   }
 }

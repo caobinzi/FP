@@ -34,14 +34,10 @@ object EffTransformApp extends App {
     program[Stack]
       .logTimes[IvrOp]
       .logTimes[BillOp]
-      .runIvr
-      .runBank
-      .runBill
-      .runLog
-      .runEval
-      .runEval
-      .runEval
-      .runEval
+      .runEffect[IvrOp]
+      .runEffect[BankOp]
+      .runEffect[LogOp]
+      .runEffect[BillOp]
       .run
   }
   println(run)

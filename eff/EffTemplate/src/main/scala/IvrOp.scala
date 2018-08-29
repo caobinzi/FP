@@ -40,7 +40,7 @@ object IvrOp {
     case _   => Continue
   }
 
-  val nt = new (IvrOp ~> Eval) {
+  implicit val nt = new (IvrOp ~> Eval) {
 
     def apply[A](fa: IvrOp[A]): Eval[A] =
       fa match {
@@ -49,13 +49,6 @@ object IvrOp {
         case CheckInput(msg) => Now(check(msg))
 
       }
-  }
-
-  implicit class IVR[SR, BR, U, A](effect: Eff[SR, A]) {
-
-    def runIvr(implicit sr: Member.Aux[IvrOp, SR, U],
-               br:          Member.Aux[Eval, BR, U]) =
-      transform(effect, nt)
   }
 
 }
