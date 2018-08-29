@@ -13,7 +13,7 @@ object BillOp {
 
   type _billOp[R] = BillOp |= R
 
-  implicit val nt = new (BillOp ~> Eval) {
+  val nt = new (BillOp ~> Eval) {
 
     def apply[A](fa: BillOp[A]): Eval[A] =
       fa match {

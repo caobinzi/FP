@@ -9,6 +9,7 @@ object EffHelper {
   implicit def liftEff[A, F[_], R: F |= ?](s: F[A]): Eff[R, A] = {
     Eff.send[F, R, A](s)
   }
+
   implicit class RunHelper[SR, BR, U, A](effect: Eff[SR, A]) {
 
     def runEffect[T[_]](
@@ -20,5 +21,6 @@ object EffHelper {
     ): Eff[U, A] = {
       transform(effect, nt).runEval
     }
+
   }
 }

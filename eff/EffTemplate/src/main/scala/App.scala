@@ -12,16 +12,20 @@ object EffApp extends App {
     import LogOp._
     import LogHelper._
 
-    def program[R: _ivrOp: _billOp: _bankOp: _logOp]: Eff[R, Unit] =
+    def program[R: _ivrOp: _billOp: _bankOp: _logOp]: Eff[R, Unit] = {
+      val info = Info("----haha----")
       for {
         bill      <- Request("Please type in your bill reference ")
+        _         <- info
         _         <- Response(s"Your bill reference: ${bill}")
         card      <- Request("Please type in your credit card info ")
         _         <- Response(s"Your credit card is : ${card}, we are processing now")
+        _         <- info
         reference <- Purchase(bill, card)
         receipt   <- UpdateBill(bill, "Paid")
         _         <- Response(s"Your payment refrence is ${receipt}")
       } yield ()
+    }
 
     type Stack = Fx.fx4[IvrOp, BillOp, BankOp, LogOp]
 

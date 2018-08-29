@@ -17,7 +17,7 @@ object LogOp {
 
   type _logOp[R] = LogOp |= R
 
-  implicit val nt = new (LogOp ~> Eval) {
+  val nt = new (LogOp ~> Eval) {
 
     def apply[A](fa: LogOp[A]): Eval[A] =
       fa match {
