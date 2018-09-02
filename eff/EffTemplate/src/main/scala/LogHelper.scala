@@ -26,9 +26,9 @@ object LogHelper {
     translateInto(eff)(new Translate[T, R] {
       def apply[X](tx: T[X]): Eff[R, X] =
         (for {
-          _ <- send(Info(s"${new java.util.Date}:$tx start"))
+          _ <- send(Info(s"${new java.util.Date} >> $tx start"))
           x <- send[T, R, X](tx)
-          _ <- send(Info(s"${new java.util.Date}:$tx end"))
+          _ <- send(Info(s"${new java.util.Date} << $tx end"))
         } yield x)
     })
   }
