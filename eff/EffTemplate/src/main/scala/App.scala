@@ -1,6 +1,9 @@
 import org.atnos.eff._
 import org.atnos.eff.all._
 import org.atnos.eff.syntax.all._
+import org.atnos.eff.addon.cats.effect.IOEffect._
+import org.atnos.eff.syntax.addon.cats.effect._
+import cats.effect.IO
 
 object EffApp extends App {
 
@@ -12,22 +15,21 @@ object EffApp extends App {
     import LogOp._
     import LogHelper._
 
-    def program[R: _ivrOp: _billOp: _bankOp: _logOp]: Eff[R, Unit] = {
-      val info = Info("----haha----")
+    def program[R: _ivrOp: _billOp: _bankOp: _logOp: _io]: Eff[R, Unit] = {
       for {
         bill      <- Request("Please type in your bill reference ")
-        _         <- info
+        _         <- Info("====haha===")
+        _         <- fromIO(IO { println("hey!") })
         _         <- Response(s"Your bill reference: ${bill}")
         card      <- Request("Please type in your credit card info ")
         _         <- Response(s"Your credit card is : ${card}, we are processing now")
-        _         <- info
         reference <- Purchase(bill, card)
         receipt   <- UpdateBill(bill, "Paid")
         _         <- Response(s"Your payment refrence is ${receipt}")
       } yield ()
     }
 
-    type Stack = Fx.fx4[IvrOp, BillOp, BankOp, LogOp]
+    type Stack = Fx.fx5[IvrOp, BillOp, BankOp, LogOp, IO]
 
     program[Stack]
       .logTimes[IvrOp]
@@ -36,7 +38,7 @@ object EffApp extends App {
       .runEffect(BankOp.nt)
       .runEffect(LogOp.nt)
       .runEffect(BillOp.nt)
-      .run
+      .unsafeRunSync
   }
   println(run)
 
