@@ -34,8 +34,8 @@ object IOHelper {
         case Failure(e) =>
           println(s"Erro found: ${e}")
           throw e
-
       }
     }
   }
+
 }
