@@ -4,6 +4,7 @@ import org.atnos.eff.syntax.all._
 import org.atnos.eff.addon.cats.effect.IOEffect._
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import org.atnos.eff.syntax.addon.cats.effect._
+import cats.implicits._
 import cats.effect.IO
 import scala.concurrent._
 import duration._
@@ -34,8 +35,11 @@ object EffApp extends App {
       _           <- Response(s"Your credit card is : ${card}, we are processing now")
       reference   <- Purchase(bill, card)
       receiptTask <- UpdateBill(bill, "Paid")
-      receipt     <- fromTask(receiptTask)
-      _           <- Response(s"Refrence ${receipt}")
+      receipt <- fromTask(
+                  (Task { Thread.sleep(10000); println("I'm running") },
+                   receiptTask).parMapN((x, y) => Unit))
+
+      _ <- Response(s"Refrence ${receipt}")
     } yield ()
   }
 
@@ -53,6 +57,7 @@ object EffApp extends App {
     .runEffect(BillOp.ntTask)
     .runAsync // Monix Task
     .runAsync
+
   println("Getting here")
 
   //   .runFuture
