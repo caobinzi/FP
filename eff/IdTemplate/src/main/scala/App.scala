@@ -16,7 +16,7 @@ object EffApp extends App {
   import BillOp._
   import BankOp._
   import EffHelper._
-  import UnsafeHelper._
+  import IOHelper._
   import LogOp._
   import LogHelper._
 
@@ -29,7 +29,7 @@ object EffApp extends App {
       _             <- Response(s"Your credit card is : ${card}, we are processing now")
       reference     <- Purchase(bill, card)
       receiptFuture <- UpdateBill(bill, "Paid")
-      receipt       <- fromFuture(receiptFuture): Eff[R, String]
+      receipt       <- fromFuture(receiptFuture)
       _             <- Response(s"Your payment refrence is ${receipt}")
     } yield ()
   }
@@ -46,6 +46,6 @@ object EffApp extends App {
     .runEffect(LogOp.nt)
     .runEffect(BillOp.nt)
     .runAsync
-  Await.result(r, 10000.seconds)
+    .runFuture
 
 }

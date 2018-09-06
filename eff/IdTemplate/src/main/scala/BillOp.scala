@@ -21,9 +21,9 @@ object BillOp {
     }
     "Finished"
   }
+  import scala.concurrent.ExecutionContext.Implicits.global
 
   val nt = new (BillOp ~> Id) {
-    import scala.concurrent.ExecutionContext.Implicits.global
 
     def apply[A](fa: BillOp[A]): Id[A] =
       fa match {
