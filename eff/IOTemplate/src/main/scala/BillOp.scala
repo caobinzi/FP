@@ -5,6 +5,7 @@ import cats.syntax.all._
 import cats.effect.IO
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import scala.concurrent._
 
 sealed trait BillOp[A]
 
@@ -15,10 +16,9 @@ case class UpdateBill(bill: String, status: String) extends BillOp[IO[String]]
 object BillOp {
 
   type _billOp[R] = BillOp |= R
-//  import scala.concurrent.ExecutionContext.Implicits.global
-  // implicit val cs = IO.contextShift(global)
+  import scala.concurrent.ExecutionContext.Implicits.global
 
-  def updateBill: String = {
+  def updateBill = Future {
     (1 to 5).foreach { x =>
       Thread.sleep(1000)
       val threadId = Thread.currentThread().getId();
@@ -29,7 +29,7 @@ object BillOp {
     "done"
   }
 
-  def checkBill: Boolean = {
+  def checkBill = Future {
     (1 to 5).foreach { x =>
       Thread.sleep(1000)
       val threadId = Thread.currentThread().getId();
@@ -45,10 +45,10 @@ object BillOp {
     def apply[A](fa: BillOp[A]): A =
       fa match {
         case UpdateBill(bill, card) =>
-          //(IO(checkBill), IO(updateBill)).parMapN((_, _) => "OK now")
-          IO(updateBill)
+          (IO.fromFuture(IO(checkBill)), IO.fromFuture(IO(updateBill)))
+            .parMapN((_, _) => "OK now")
 
-        case CheckBill(bill) => IO(checkBill)
+        case CheckBill(bill) => IO.fromFuture(IO(checkBill))
       }
   }
 }
