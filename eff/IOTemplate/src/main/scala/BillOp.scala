@@ -19,6 +19,7 @@ object BillOp {
   import scala.concurrent.ExecutionContext.Implicits.global
 
   def updateBill = Future {
+    println("Update Start")
     (1 to 5).foreach { x =>
       Thread.sleep(1000)
       val threadId = Thread.currentThread().getId();
@@ -30,6 +31,7 @@ object BillOp {
   }
 
   def checkBill = Future {
+    println("Checking Start")
     (1 to 5).foreach { x =>
       Thread.sleep(1000)
       val threadId = Thread.currentThread().getId();
@@ -45,10 +47,13 @@ object BillOp {
     def apply[A](fa: BillOp[A]): A =
       fa match {
         case UpdateBill(bill, card) =>
+          println(">>>Translating update bill")
           (IO.fromFuture(IO(checkBill)), IO.fromFuture(IO(updateBill)))
             .parMapN((_, _) => "OK now")
 
-        case CheckBill(bill) => IO.fromFuture(IO(checkBill))
+        case CheckBill(bill) =>
+          println(">>>Translating check bill")
+          IO.fromFuture(IO(checkBill))
       }
   }
 }

@@ -25,9 +25,10 @@ object EffApp extends App {
       _           <- Response(s"Your credit card is : ${card}, we are processing now")
       reference   <- Purchase(bill, card)
       receiptTask <- UpdateBill(bill, "Paid")
-      receipt     <- fromIO(receiptTask)
+      checkTask   <- CheckBill(bill)
+      result      <- fromIO((receiptTask, checkTask).parMapN((_, _) => "haha"))
 
-      _ <- Response(s"Refrence ${receipt}")
+      _ <- Response(s"Refrence ${result}")
     } yield ()
   }
 
