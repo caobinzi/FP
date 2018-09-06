@@ -22,15 +22,22 @@ object EffApp extends App {
 
   def program[R: _ivrOp: _billOp: _bankOp: _logOp: _future]: Eff[R, Unit] = {
     for {
-      bill          <- Request("Please type in your bill reference ")
-      _             <- Info("====haha===")
-      _             <- Response(s"Your bill reference: ${bill}")
-      card          <- Request("Please type in your credit card info ")
-      _             <- Response(s"Your credit card is : ${card}, we are processing now")
+      bill <- Request("Please type in your bill reference ")
+      _    <- Info("====haha===")
+      _    <- Response(s"Your bill reference: ${bill}")
+      card <- Request("Please type in your credit card info ")
+      _    <- Response(s"Your credit card is : ${card}, we are processing now")
+      _ <- futureDelay[R, Unit] {
+            Thread.sleep(10000); println("hoho I'm a future")
+          }
       reference     <- Purchase(bill, card)
       receiptFuture <- UpdateBill(bill, "Paid")
       receipt       <- fromFuture(receiptFuture)
-      _             <- Response(s"Your payment refrence is ${receipt}")
+
+      checkFuture <- CheckBill(bill)
+      check       <- fromFuture(checkFuture)
+
+      _ <- Response(s"Your payment refrence is ${receipt} -> ${check}")
     } yield ()
   }
 

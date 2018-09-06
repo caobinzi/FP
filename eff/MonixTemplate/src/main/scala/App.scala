@@ -13,6 +13,8 @@ import org.atnos.eff.syntax.addon.monix.task._
 import monix.eval._
 import monix.execution._
 
+import scala.concurrent.duration._
+
 object EffApp extends App {
 
   import IvrOp._
@@ -33,11 +35,12 @@ object EffApp extends App {
       reference   <- Purchase(bill, card)
       receiptTask <- UpdateBill(bill, "Paid")
       receipt     <- fromTask(receiptTask)
-      _           <- Response(s"Your payment refrence is ${receipt}")
+      _           <- Response(s"Refrence ${receipt}")
     } yield ()
   }
 
   type Stack = Fx.fx5[IvrOp, BillOp, BankOp, LogOp, Task]
+
   implicit val scheduler = monix.execution.Scheduler(
     java.util.concurrent.Executors.newScheduledThreadPool(10))
 
@@ -48,10 +51,10 @@ object EffApp extends App {
     .runEffect(BankOp.nt)
     .runEffect(LogOp.nt)
     .runEffect(BillOp.ntTask)
+    .runAsync // Monix Task
     .runAsync
-    .runAsync
-    .runFuture
-  println(r)
+  println("Getting here")
+
   //   .runFuture
 
 }

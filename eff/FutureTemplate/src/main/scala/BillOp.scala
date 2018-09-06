@@ -5,7 +5,7 @@ import scala.concurrent.{ExecutionContext, Future, Promise}
 
 sealed trait BillOp[A]
 
-case class CheckBill(bill: String) extends BillOp[Boolean]
+case class CheckBill(bill: String) extends BillOp[Future[Boolean]]
 
 case class UpdateBill(bill: String, status: String)
     extends BillOp[Future[String]]
@@ -21,6 +21,15 @@ object BillOp {
     }
     "Finished"
   }
+
+  def checkBill = {
+    (1 to 5).foreach { x =>
+      Thread.sleep(1000)
+      println("checking")
+    }
+    true
+  }
+
   import scala.concurrent.ExecutionContext.Implicits.global
 
   val nt = new (BillOp ~> Id) {
@@ -28,7 +37,7 @@ object BillOp {
     def apply[A](fa: BillOp[A]): Id[A] =
       fa match {
         case UpdateBill(bill, card) => Future(updateBill)
-        case CheckBill(bill)        => true
+        case CheckBill(bill)        => Future(checkBill)
       }
   }
 }
