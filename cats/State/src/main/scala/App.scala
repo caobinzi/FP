@@ -4,6 +4,6 @@ object CatsSyntaxApp extends App {
   }
   println(CompareString.run("abb/c", "abcc/"))
   println(CompareString.run("abc", "aa/bc"))
-  println(CompareString.run("a/aaaaabc", "//abc"))
+  println(CompareString.run("a/aaaaabc", "//abc/"))
 
 }
